@@ -9,8 +9,7 @@ import "./lib/Utils.sol";
 /**
  * @title Source bridge contract
  * @author xpanvictor
- * @notice 
- * 
+ * @notice Imp
  * The contract needs some form of queue to ensure a FIFO batch of txns to be handled,
  * this way, we can avoid skipped txns.
  */
