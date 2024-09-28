@@ -4,3 +4,9 @@ out = "out"
 libs = ["lib"]
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
+[profile.mainnet]
+fork-url = "https://sepolia.infura.io/v3/63e288d332644157a85ab66d96d3662f"
+
+[profile.arbitrum]
+fork-url = "https://arbitrum-sepolia.infura.io/v3/63e288d332644157a85ab66d96d3662f"
+
