@@ -1,20 +1,29 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.27;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import "./lib/Utils.sol";
 
+/**
+ * @title Source bridge contract
+ * @author xpanvictor
+ * @notice 
+ * 
+ * The contract needs some form of queue to ensure a FIFO batch of txns to be handled,
+ * this way, we can avoid skipped txns.
+ */
 contract EthBridge is Initializable, OwnableUpgradeable {
-    function initialize() public initializer {}
+    // will use a basic balance check on source and destination
+    mapping(address => uint256) tokenBalanceMapping;
 
-    function withdrawERC20(address erc20TokenAddr, uint256 amount) private returns (uint256 totalWithdrawn) {
-        ERC20Upgradeable token = ERC20Upgradeable(erc20TokenAddr);
-        // Request approval
-        require(token.approve(msg.sender, amount), "Err approving withdrawal");
-        // withdraw token from user
-        token.transferFrom(msg.sender, address(this), amount);
-        totalWithdrawn = amount;
+    function initialize() public initializer {
+        tokenBalanceMapping[address(0)] = address(this).balance;
+    }
+
+    function incrementBalance(address tokenAddress, uint256 amount) internal {
+        tokenBalanceMapping[tokenAddress] += amount;
     }
 
     function bridge(address baseToken, uint256 amount) public payable {
@@ -23,8 +32,12 @@ contract EthBridge is Initializable, OwnableUpgradeable {
             // native token mint
             amount = msg.value;
         } else {
-            amount = withdrawERC20(baseToken, amount);
+            amount = BridgertonUtils.transferERC20(baseToken, amount);
         }
-        // proceed with event logging
+        // TODO: proceed with event logging
+        incrementBalance(baseToken, amount);
     }
+
+    // Withdraw fn through owner only
+    function withdraw(address baseToken, address to, uint256 amount) public onlyOwner {}
 }
