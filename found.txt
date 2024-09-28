@@ -6,6 +6,10 @@ script = "script"
 solc = "0.8.26"
 src = "src"
 test = "test"
+ffi = true
+ast = true
+build_info = true
+extra_output = ["storageLayout"]
 libs = ["dependencies"]
 
 [profile.mainnet]
